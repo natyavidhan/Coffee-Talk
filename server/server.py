@@ -26,6 +26,7 @@ class Server:
                 try:
                     self.s.sendto(msg, member)
                 except Exception as e:
+                    self.members.remove(member)
                     print(str(e))
     
     def start(self):
