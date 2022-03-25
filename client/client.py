@@ -9,27 +9,15 @@ class Client:
         self.network = Network(ip)
         self.audio = Audio()
 
-    def recieve(self):
+    def process(self):
         while True:
-            try:
-                data = self.network.client.recv(1024)
+            data = self.audio.get()
+            if data:
+                data = self.network.send(data)
                 self.audio.play(data)
-            except:
-                pass
-    
-    def send(self):
-        while True:
-            try:
-                data = self.audio.get()
-                self.network.client.sendall(data)
-            except:
-                pass
 
     def start(self):
-        t1 = Thread(target=self.recieve)
-        t2 = Thread(target=self.send)
-        t1.start()
-        t2.start()
+        Thread(target=self.process).start()
         
-client = Client(f"{socket.gethostbyname(socket.gethostname())}:42069")
+client = Client(f":42069")
 client.start()

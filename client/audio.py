@@ -13,13 +13,14 @@ class Audio:
     def play(self, data):
         try:
             self.playing_stream.write(data)
-        except:
-            pass
+        except Exception as e:
+            print(f"Error playing audio: {e}")
 
 
     def get(self):
         try:
             data = self.recording_stream.read(1024)
+            print(data)
             return data
-        except:
-            pass
+        except Exception as e:
+            print(f"Error recording audio: {e}")

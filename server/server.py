@@ -18,23 +18,21 @@ class Server:
         except socket.error as e:
             print(str(e))
         
-        members = []
+        self.members = []
     
     def broadcast(self, msg):
-        for member in members:
+        for member in self.members:
             try:
-                self.s.sendto(msg.encode('utf-8'), member)
-            except:
-                pass
+                self.s.sendto(msg, member)
+            except Exception as e:
+                print(str(e))
     
     def start(self):
         while True:
-            msg, addr = self.s.recvfrom(1024)
-            if addr not in members:
-                members.append(addr)
-            self.broadcast(msg.decode('utf-8'))
+            msg, addr = self.s.recvfrom(2048)
+            if addr not in self.members:
+                self.members.append(addr)
+            self.broadcast(msg)
             
-        
-
 server = Server()
 Thread(target=server.start).start()
