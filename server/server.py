@@ -30,10 +30,13 @@ class Server:
     
     def start(self):
         while True:
-            msg, addr = self.s.recvfrom(2048)
-            if addr not in self.members:
-                self.members.append(addr)
-            self.broadcast(msg, addr)
+            try:
+                msg, addr = self.s.recvfrom(2048)
+                if addr not in self.members:
+                    self.members.append(addr)
+                self.broadcast(msg, addr)
+            except Exception as e:
+                print(str(e))
             
 server = Server()
 Thread(target=server.start).start()

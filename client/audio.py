@@ -20,7 +20,6 @@ class Audio:
     def get(self):
         try:
             data = self.recording_stream.read(1024)
-            print(data)
             return data
         except Exception as e:
             print(f"Error recording audio: {e}")
