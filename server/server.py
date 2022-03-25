@@ -1,11 +1,11 @@
 import socket
 import json
-from _thread import *
+from threading import Thread
 
 class Server:
     def __init__(self):
         config = json.load(open("config.json"))
-        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         ip = [config["ip"], config["port"]]
         if ip[0] == "":
             self.host = socket.gethostbyname(socket.gethostname())
@@ -14,33 +14,27 @@ class Server:
         self.port = int(ip[1])
 
         try:
-            self.s.bind((self.server, self.port))
+            self.s.bind((self.host, self.port))
         except socket.error as e:
             print(str(e))
-        self.s.listen(10)
-        print("Waiting for a connection")
-        self.members = {}
         
-    def entry():
-        while True:
-            conn, addr = self.s.accept()
-            start_new_thread(client, (conn, addr))
+        members = []
     
-    def broadcast(self, msg, conn):
-        for c in self.members:
-            if c != conn:
-                try:
-                    c.send(msg)
-                except:
-                    pass
-
-    def client(self, conn, addr):
-        print("Connected to:", addr)
+    def broadcast(self, msg):
+        for member in members:
+            try:
+                self.s.sendto(msg.encode('utf-8'), member)
+            except:
+                pass
+    
+    def start(self):
         while True:
-            data = conn.recv(1024)
-            if not data:
-                break
-            self.broadcast(data, conn)
+            msg, addr = self.s.recvfrom(1024)
+            if addr not in members:
+                members.append(addr)
+            self.broadcast(msg.decode('utf-8'))
             
-        conn.close()
-        print("Connection closed")
+        
+
+server = Server()
+Thread(target=server.start).start()
