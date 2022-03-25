@@ -5,25 +5,6 @@ import socket
 import tkinter as tk
 from tkinter import ttk
 
-class Client:
-    def __init__(self, ip):
-        self.network = Network(ip)
-        self.audio = Audio()
-        self.start()
-        self.mute = True
-
-    def process(self):
-        while True:
-            try:
-                data = self.audio.get() if not self.mute else b""
-                data = self.network.send(data)
-                self.audio.play(data)
-            except Exception as e:
-                print(f"Error: {e}")
-
-    def start(self):
-        Thread(target=self.process).start()
-        
 
 class App:
     def __init__(self, root):
@@ -76,9 +57,10 @@ class App:
     def process(self):
         while True:
             try:
-                data = self.audio.get() if not self.isMuted else b""
-                data = self.network.send(data)
-                self.audio.play(data)
+                if self.network:
+                    data = self.audio.get() if not self.isMuted else b""
+                    data = self.network.send(data)
+                    self.audio.play(data)
             except Exception as e:
                 print(f"Error: {e}")
 
