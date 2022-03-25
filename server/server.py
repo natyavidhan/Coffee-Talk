@@ -20,19 +20,20 @@ class Server:
         
         self.members = []
     
-    def broadcast(self, msg):
+    def broadcast(self, msg, sender):
         for member in self.members:
-            try:
-                self.s.sendto(msg, member)
-            except Exception as e:
-                print(str(e))
+            if member != sender:
+                try:
+                    self.s.sendto(msg, member)
+                except Exception as e:
+                    print(str(e))
     
     def start(self):
         while True:
             msg, addr = self.s.recvfrom(2048)
             if addr not in self.members:
                 self.members.append(addr)
-            self.broadcast(msg)
+            self.broadcast(msg, addr)
             
 server = Server()
 Thread(target=server.start).start()
