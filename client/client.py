@@ -10,13 +10,16 @@ class Client:
         self.network = Network(ip)
         self.audio = Audio()
         self.start()
+        self.mute = True
 
     def process(self):
         while True:
-            data = self.audio.get()
-            if data:
+            try:
+                data = self.audio.get() if not self.mute else b""
                 data = self.network.send(data)
                 self.audio.play(data)
+            except Exception as e:
+                print(f"Error: {e}")
 
     def start(self):
         Thread(target=self.process).start()
@@ -28,6 +31,8 @@ class App:
         self.root.title("Coffee talk Client")
         self.root.geometry("500x200")
         self.root.resizable(False, False)
+        self.audio = Audio()
+        self.network = None
         self.isMuted = True
         
         title = tk.Label(text="Coffee talk", font=("Consolas", 25), anchor="center")
@@ -55,7 +60,10 @@ class App:
         self.memberList.place(x=50, y=110, width=250, height=70)
     
     def join(self):
-        pass
+        ip = f"{self.hostInput.get()}:{self.portInput.get()}"
+        print(f"Joining {ip}")
+        self.network = Network(ip)
+        Thread(target=self.process).start()
     
     def mute(self):
         if self.isMuted:
@@ -64,6 +72,15 @@ class App:
         else:
             self.isMuted = True
             self.muteButton.config(text="Unmute")
+    
+    def process(self):
+        while True:
+            try:
+                data = self.audio.get() if not self.isMuted else b""
+                data = self.network.send(data)
+                self.audio.play(data)
+            except Exception as e:
+                print(f"Error: {e}")
 
 if __name__ == "__main__":
     root = tk.Tk()
