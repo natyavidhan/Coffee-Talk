@@ -16,8 +16,7 @@ class Network:
     def send(self, data):
         try:
             self.client.sendto(data, self.addr)
-            response = self.client.recvfrom(2048)[0]
-            return response
+            return self.client.recvfrom(2048)[0]
         except socket.error as e:
-            print(str(e))
+            print(e)
             return "Error"

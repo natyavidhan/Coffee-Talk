@@ -58,7 +58,7 @@ class App:
         while True:
             try:
                 if self.network:
-                    data = self.audio.get() if not self.isMuted else b""
+                    data = b"" if self.isMuted else self.audio.get()
                     data = self.network.send(data)
                     self.audio.play(data)
             except Exception as e:

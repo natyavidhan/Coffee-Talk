@@ -16,8 +16,8 @@ class Server:
         try:
             self.s.bind((self.host, self.port))
         except socket.error as e:
-            print(str(e))
-        
+            print(e)
+
         self.members = []
     
     def broadcast(self, msg, sender):
@@ -27,7 +27,7 @@ class Server:
                     self.s.sendto(msg, member)
                 except Exception as e:
                     self.members.remove(member)
-                    print(str(e))
+                    print(e)
     
     def start(self):
         while True:
@@ -37,7 +37,7 @@ class Server:
                     self.members.append(addr)
                 self.broadcast(msg, addr)
             except Exception as e:
-                print(str(e))
+                print(e)
             
 server = Server()
 Thread(target=server.start).start()
